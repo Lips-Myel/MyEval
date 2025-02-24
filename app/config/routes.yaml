@@ -3,3 +3,8 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+frontend:
+    path: /{reactRouting}
+    controller: App\Controller\ReactController::index
+    requirements:
+        reactRouting: .*

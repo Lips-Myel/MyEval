@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,6 +36,38 @@ class User
     #[ORM\ManyToOne(inversedBy: 'role')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $hasRole = null;
+
+    /**
+     * @var Collection<int, Evaluation>
+     */
+    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'teacherId')]
+    private Collection $studentEvaluation;
+
+    /**
+     * @var Collection<int, Evaluation>
+     */
+    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'studentId')]
+    private Collection $autoEvaluation;
+
+    /**
+     * @var Collection<int, Question>
+     */
+    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'createBy')]
+    private Collection $questions;
+
+    /**
+     * @var Collection<int, Statistique>
+     */
+    #[ORM\OneToMany(targetEntity: Statistique::class, mappedBy: 'studentId', orphanRemoval: true)]
+    private Collection $statistiques;
+
+    public function __construct()
+    {
+        $this->studentEvaluation = new ArrayCollection();
+        $this->autoEvaluation = new ArrayCollection();
+        $this->questions = new ArrayCollection();
+        $this->statistiques = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,6 +142,126 @@ class User
     public function setHasRole(?Role $hasRole): static
     {
         $this->hasRole = $hasRole;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Evaluation>
+     */
+    public function getStudentEvaluation(): Collection
+    {
+        return $this->studentEvaluation;
+    }
+
+    public function addStudentEvaluation(Evaluation $studentEvaluation): static
+    {
+        if (!$this->studentEvaluation->contains($studentEvaluation)) {
+            $this->studentEvaluation->add($studentEvaluation);
+            $studentEvaluation->setTeacherId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudentEvaluation(Evaluation $studentEvaluation): static
+    {
+        if ($this->studentEvaluation->removeElement($studentEvaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($studentEvaluation->getTeacherId() === $this) {
+                $studentEvaluation->setTeacherId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Evaluation>
+     */
+    public function getAutoEvaluation(): Collection
+    {
+        return $this->autoEvaluation;
+    }
+
+    public function addAutoEvaluation(Evaluation $autoEvaluation): static
+    {
+        if (!$this->autoEvaluation->contains($autoEvaluation)) {
+            $this->autoEvaluation->add($autoEvaluation);
+            $autoEvaluation->setStudentId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAutoEvaluation(Evaluation $autoEvaluation): static
+    {
+        if ($this->autoEvaluation->removeElement($autoEvaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($autoEvaluation->getStudentId() === $this) {
+                $autoEvaluation->setStudentId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): static
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions->add($question);
+            $question->setCreateBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): static
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getCreateBy() === $this) {
+                $question->setCreateBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Statistique>
+     */
+    public function getStatistiques(): Collection
+    {
+        return $this->statistiques;
+    }
+
+    public function addStatistique(Statistique $statistique): static
+    {
+        if (!$this->statistiques->contains($statistique)) {
+            $this->statistiques->add($statistique);
+            $statistique->setStudentId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStatistique(Statistique $statistique): static
+    {
+        if ($this->statistiques->removeElement($statistique)) {
+            // set the owning side to null (unless already changed)
+            if ($statistique->getStudentId() === $this) {
+                $statistique->setStudentId(null);
+            }
+        }
 
         return $this;
     }

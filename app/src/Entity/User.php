@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,6 +36,17 @@ class User
     #[ORM\ManyToOne(inversedBy: 'role')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $hasRole = null;
+
+    /**
+     * @var Collection<int, Export>
+     */
+    #[ORM\OneToMany(targetEntity: Export::class, mappedBy: 'userId')]
+    private Collection $exports;
+
+    public function __construct()
+    {
+        $this->exports = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -108,6 +121,36 @@ class User
     public function setHasRole(?Role $hasRole): static
     {
         $this->hasRole = $hasRole;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Export>
+     */
+    public function getExports(): Collection
+    {
+        return $this->exports;
+    }
+
+    public function addExport(Export $export): static
+    {
+        if (!$this->exports->contains($export)) {
+            $this->exports->add($export);
+            $export->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExport(Export $export): static
+    {
+        if ($this->exports->removeElement($export)) {
+            // set the owning side to null (unless already changed)
+            if ($export->getUserId() === $this) {
+                $export->setUserId(null);
+            }
+        }
 
         return $this;
     }

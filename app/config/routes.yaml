@@ -1,10 +1,17 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+    resource: '../src/Controller/'
     type: attribute
-frontend:
-    path: /{reactRouting}
-    controller: App\Controller\ReactController::index
-    requirements:
-        reactRouting: .*
+index:
+    path: /
+    controller: App\Controller\DefaultController::home
+    defaults: {}
+
+app_login:
+    path: /login
+    controller: App\Controller\AuthController::login
+    methods: [POST]
+
+app_logout:
+    path: /logout
+    controller: App\Controller\AuthController::logout
+    methods: [POST]

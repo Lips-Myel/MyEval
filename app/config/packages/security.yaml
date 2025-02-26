@@ -5,25 +5,35 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
+        users_in_db:
+            entity:
+                class: App\Entity\User
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: users_in_db  # Utilisez users_in_db si vous utilisez une base de données
+            json_login:
+                check_path: api/login
+                username_path: email # Utilise "email" au lieu de "username"
+                password_path: password
+                
+            logout:
+                path: api/logout
+                target: api/login
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
+            stateless: true
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        # Règles d'accès pour les différents rôles
+        - { path: ^/admin, roles: Administrateur }
+        - { path: ^/form, roles: Formateur }
+        - { path: ^/stud, roles: Etudiant }
 
 when@test:
     security:

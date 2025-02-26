@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\RoleRepository;
+use App\Repository\FormationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RoleRepository::class)]
+#[ORM\Entity(repositoryClass: FormationRepository::class)]
 #[ApiResource]
-class Role
+class Formation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,12 +23,12 @@ class Role
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'role')]
-    private Collection $role;
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'formations')]
+    private Collection $members;
 
     public function __construct()
     {
-        $this->role = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -51,29 +51,23 @@ class Role
     /**
      * @return Collection<int, User>
      */
-    public function getRole(): Collection
+    public function getMembers(): Collection
     {
-        return $this->role;
+        return $this->members;
     }
 
-    public function addRole(User $role): static
+    public function addMember(User $member): static
     {
-        if (!$this->role->contains($role)) {
-            $this->role->add($role);
-            $role->setRole($this);
+        if (!$this->members->contains($member)) {
+            $this->members->add($member);
         }
 
         return $this;
     }
 
-    public function removeRole(User $role): static
+    public function removeMember(User $member): static
     {
-        if ($this->role->removeElement($role)) {
-            // set the owning side to null (unless already changed)
-            if ($role->getRole() === $this) {
-                $role->setRole(null);
-            }
-        }
+        $this->members->removeElement($member);
 
         return $this;
     }

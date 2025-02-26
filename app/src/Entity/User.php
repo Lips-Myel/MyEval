@@ -3,16 +3,92 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\UserRepository;
+use App\Controller\UserCreateController;
+use App\Controller\UserUpdateController;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
-class User
-{
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/admin/create-users',
+            controller: UserCreateController::class,
+            name: 'app_create_users',
+            extraProperties: [
+                'openapi' => [
+                    'summary' => 'Créer un utilisateur personnalisé',
+                    'description' => 'Une route POST personnalisée pour créer un utilisateur',
+                ]
+            ]
+        ),
+        new GetCollection(
+            uriTemplate: '/users',
+            name: 'app_get_users',
+            extraProperties: [
+                'openapi' => [
+                    'summary' => 'Récupérer tous les utilisateurs',
+                    'description' => 'Retourne la liste complète des utilisateurs',
+                ]
+            ]
+        ),
+        new Get(
+            uriTemplate: '/users/{id}',
+            name: 'app_get_user_by_id',
+            extraProperties: [
+                'openapi' => [
+                    'summary' => 'Récupérer un utilisateur par ID',
+                    'description' => 'Retourne un utilisateur spécifique basé sur son ID',
+                ]
+            ]
+        ),
+        new Patch(
+            uriTemplate: '/users/{id}',
+            controller: UserUpdateController::class . '::updateUser',
+            name: 'app_update_user',
+            extraProperties: [
+                'openapi' => [
+                    'summary' => 'Mettre à jour un utilisateur',
+                    'description' => 'Modifie les informations d’un utilisateur, y compris son mot de passe',
+                ]
+            ]
+        ),
+        new Delete(
+            uriTemplate: '/users/{id}',
+            name: 'app_delete_user',
+            extraProperties: [
+                'openapi' => [
+                    'summary' => 'Supprimer un utilisateur',
+                    'description' => 'Supprime un utilisateur de la base de données',
+                ]
+            ]
+        ),
+        new Post(
+            uriTemplate: '/users/{id}/reset-password',
+            controller: UserUpdateController::class . '::resetPassword',
+            name: 'app_reset_password',
+            extraProperties: [
+                'openapi' => [
+                    'summary' => 'Réinitialiser le mot de passe',
+                    'description' => 'Génère un nouveau mot de passe pour un utilisateur et le met à jour',
+                ]
+            ]
+        )
+    ]
+)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
+ {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,7 +111,7 @@ class User
 
     #[ORM\ManyToOne(inversedBy: 'role')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Role $hasRole = null;
+    private ?Role $role = null;
 
     /**
      * @var Collection<int, Evaluation>
@@ -61,13 +137,32 @@ class User
     #[ORM\OneToMany(targetEntity: Statistique::class, mappedBy: 'studentId', orphanRemoval: true)]
     private Collection $statistiques;
 
+    /**
+     * @var Collection<int, Formation>
+     */
+    #[ORM\ManyToMany(targetEntity: Formation::class, mappedBy: 'members')]
+    private Collection $formations;
+
     public function __construct()
     {
         $this->studentEvaluation = new ArrayCollection();
         $this->autoEvaluation = new ArrayCollection();
         $this->questions = new ArrayCollection();
         $this->statistiques = new ArrayCollection();
+        $this->formations = new ArrayCollection();
     }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->role ? [$this->role->getName()] : ['ROLE_USER'];
+    }
+
+    public function eraseCredentials(): void {}
 
     public function getId(): ?int
     {
@@ -134,14 +229,14 @@ class User
         return $this;
     }
 
-    public function getHasRole(): ?Role
+    public function getRole(): ?Role
     {
-        return $this->hasRole;
+        return $this->role;
     }
 
-    public function setHasRole(?Role $hasRole): static
+    public function setRole(?Role $role): static
     {
-        $this->hasRole = $hasRole;
+        $this->role = $role;
 
         return $this;
     }
@@ -265,4 +360,56 @@ class User
 
         return $this;
     }
+
+        /**
+     * @return Collection<int, Formation>
+     */
+    
+     public function getFormationNames(): array
+     {
+         return $this->formations->map(fn(Formation $formation) => $formation->getName())->toArray();
+     }
+     public function getFormations(): Collection
+    {
+        return $this->formations;
+    }
+
+    public function addFormation(Formation $formation): static
+    {
+        if (!$this->formations->contains($formation)) {
+            $this->formations->add($formation);
+            $formation->addMember($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormation(Formation $formation): static
+    {
+        if ($this->formations->removeElement($formation)) {
+            $formation->removeMember($this);
+        }
+
+        return $this;
+    }
+
+    // Ajoute cette méthode pour enrichir le token avec tes données personnalisées
+    public function getJWTCustomClaims(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'email' => $this->getEmail(),
+            'first_name' => $this->getFirstName(),
+            'last_name' => $this->getLastName(),
+            'roles' => $this->getRole(),
+        ];
+    }
+
+    // Implémentation de la méthode obligatoire (peut rester vide si inutile)
+    public static function createFromPayload($username, array $payload)
+    {
+        // Ici, tu peux récupérer les données du payload pour recréer un utilisateur si nécessaire
+        return new self();
+    }
+
 }

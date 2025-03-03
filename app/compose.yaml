@@ -18,6 +18,7 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+      - ./config/ssl:/config/ssl
     ports:
       # HTTP
       - target: 80
@@ -38,7 +39,7 @@ services:
 
 ###> doctrine/doctrine-bundle ###
   database:
-    image: mysql:${MYSQL_VERSION:-8}
+    image: mysql:${MYSQL_VERSION:-8.4.3}
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
       # You should definitely change the password in production
@@ -60,6 +61,7 @@ services:
     working_dir: /usr/app
     volumes:
       - ./client:/usr/app
+      - ./config/ssl:/config/ssl
     ports:
       - 5173:5173
     command: ["bash", "-c", "npm install && npm run dev"]

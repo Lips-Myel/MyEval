@@ -1,17 +1,13 @@
 controllers:
     resource: '../src/Controller/'
     type: attribute
-index:
-    path: /
-    controller: App\Controller\DefaultController::home
-    defaults: {}
 
 app_login:
-    path: /login
+    path: api/login
     controller: App\Controller\AuthController::login
-    methods: [POST]
+    methods: [POST] [OPTIONS]
 
 app_logout:
-    path: /logout
+    path: api/logout
     controller: App\Controller\AuthController::logout
-    methods: [POST]
+    methods: [POST] [OPTIONS]

@@ -10,6 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ResponseRepository::class)]
 #[ApiResource]
+#[ORM\Table(name: "response", uniqueConstraints: [
+    new ORM\UniqueConstraint(name: "unique_evaluation_question", columns: ["evaluation_id", "question_id"])
+], indexes: [
+    new ORM\Index(name: "idx_evaluation", columns: ["evaluation_id"]),
+    new ORM\Index(name: "idx_question", columns: ["question_id"])
+])]
 class Response
 {
     #[ORM\Id]
@@ -21,8 +27,10 @@ class Response
     #[ORM\JoinColumn(nullable: false)]
     private ?Evaluation $evaluationId = null;
 
-    #[ORM\OneToOne(inversedBy: 'response', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'responses')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Question $questionId = null;
+
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, enumType: AnswerValue::class)]
     private array $answerValue = [];

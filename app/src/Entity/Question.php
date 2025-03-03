@@ -20,7 +20,7 @@ class Question
     private ?string $questionText = null;
 
     #[ORM\Column(enumType: TypeChoice::class)]
-    private ?TypeChoice $questionTyÃpe = null;
+    private ?TypeChoice $questionType = null;
 
     #[ORM\ManyToOne(inversedBy: 'questions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -46,14 +46,14 @@ class Question
         return $this;
     }
 
-    public function getQuestionTyÃpe(): ?TypeChoice
+    public function getQuestionType(): ?TypeChoice
     {
-        return $this->questionTyÃpe;
+        return $this->questionType;
     }
 
-    public function setQuestionTyÃpe(TypeChoice $questionTyÃpe): static
+    public function setQuestionType(TypeChoice $questionType): static
     {
-        $this->questionTyÃpe = $questionTyÃpe;
+        $this->questionType = $questionType;
 
         return $this;
     }

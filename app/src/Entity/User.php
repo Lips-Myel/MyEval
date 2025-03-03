@@ -109,8 +109,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $lastConnection = null;
 
-    #[ORM\ManyToOne(inversedBy: 'role')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Role::class, inversedBy: 'users')]
+    #[ORM\JoinColumn(name: "role_id", referencedColumnName: "id", nullable: false)]
+
     private ?Role $role = null;
 
     /**
@@ -229,10 +230,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         return $this;
     }
 
+
     public function getRole(): ?Role
     {
         return $this->role;
     }
+
+    
 
     public function setRole(?Role $role): static
     {

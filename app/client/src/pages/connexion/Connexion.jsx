@@ -15,7 +15,7 @@ function Connexion() {
 
     try {
       const response = await axios.post(
-        'https://localhost/api/login',
+        'http://localhost/api/login',
         { email, password },
         {
           headers: {
@@ -38,7 +38,7 @@ function Connexion() {
   const handleLogout = async () => {
     try {
       const response = await axios.post(
-        'https://localhost/api/logout',
+        'http://localhost/api/logout',
         {},
         {
           withCredentials: true,  // Gère la session

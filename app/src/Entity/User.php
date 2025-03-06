@@ -74,17 +74,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
                 ]
             ]
         ),
-        new Post(
-            uriTemplate: '/users/{id}/reset-password',
-            controller: UserUpdateController::class . '::resetPassword',
-            name: 'app_reset_password',
-            extraProperties: [
-                'openapi' => [
-                    'summary' => 'Réinitialiser le mot de passe',
-                    'description' => 'Génère un nouveau mot de passe pour un utilisateur et le met à jour',
-                ]
-            ]
-        )
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface

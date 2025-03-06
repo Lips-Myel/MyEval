@@ -23,11 +23,14 @@ class Question
     private ?TypeChoice $questionType = null;
 
     #[ORM\ManyToOne(inversedBy: 'questions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $createBy = null;
 
     #[ORM\OneToOne(mappedBy: 'questionId', cascade: ['persist', 'remove'])]
-    private ?Response $response = null;
+    private ?Responses $response = null;
+
+    #[ORM\Column(length: 255 , nullable:true)]
+    private ?string $correctAnswer = null;
 
     public function getId(): ?int
     {
@@ -70,12 +73,12 @@ class Question
         return $this;
     }
 
-    public function getResponse(): ?Response
+    public function getResponse(): ?Responses
     {
         return $this->response;
     }
 
-    public function setResponse(?Response $response): static
+    public function setResponse(?Responses $response): static
     {
         // unset the owning side of the relation if necessary
         if ($response === null && $this->response !== null) {
@@ -88,6 +91,18 @@ class Question
         }
 
         $this->response = $response;
+
+        return $this;
+    }
+
+    public function getCorrectAnswer(): ?string
+    {
+        return $this->correctAnswer;
+    }
+
+    public function setCorrectAnswer(string $correctAnswer): static
+    {
+        $this->correctAnswer = $correctAnswer;
 
         return $this;
     }

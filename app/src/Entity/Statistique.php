@@ -29,6 +29,9 @@ class Statistique
     #[ORM\Column(nullable: true)]
     private ?float $standardDeviation = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1)]
+    private ?string $teacherScore = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,6 +81,18 @@ class Statistique
     public function setStandardDeviation(?float $standardDeviation): static
     {
         $this->standardDeviation = $standardDeviation;
+
+        return $this;
+    }
+
+    public function getTeacherScore(): ?string
+    {
+        return $this->teacherScore;
+    }
+
+    public function setTeacherScore(string $teacherScore): static
+    {
+        $this->teacherScore = $teacherScore;
 
         return $this;
     }

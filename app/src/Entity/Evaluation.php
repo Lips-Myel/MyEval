@@ -35,10 +35,13 @@ class Evaluation
     private ?User $studentId = null;
 
     /**
-     * @var Collection<int, Response>
+     * @var Collection<int, Responses>
      */
-    #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'evaluationId', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Responses::class, mappedBy: 'evaluationId', orphanRemoval: true)]
     private Collection $responses;
+
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
 
     public function __construct()
     {
@@ -111,14 +114,14 @@ class Evaluation
     }
 
     /**
-     * @return Collection<int, Response>
+     * @return Collection<int, Responses>
      */
     public function getResponses(): Collection
     {
         return $this->responses;
     }
 
-    public function addResponse(Response $response): static
+    public function addResponse(Responses $response): static
     {
         if (!$this->responses->contains($response)) {
             $this->responses->add($response);
@@ -128,7 +131,7 @@ class Evaluation
         return $this;
     }
 
-    public function removeResponse(Response $response): static
+    public function removeResponse(Responses $response): static
     {
         if ($this->responses->removeElement($response)) {
             // set the owning side to null (unless already changed)
@@ -136,6 +139,18 @@ class Evaluation
                 $response->setEvaluationId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

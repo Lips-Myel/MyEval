@@ -3,12 +3,12 @@
 namespace App\DataFixtures;
 
 use App\Entity\Formation;
+use App\Entity\Responses;
 use App\Entity\User;
 use App\Entity\Role;
 use App\Entity\Evaluation;
 use App\Entity\Export;
 use App\Entity\Question;
-use App\Entity\Response;
 use App\Entity\Statistique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -98,14 +98,14 @@ class UserFixtures extends Fixture
                 // Créer des réponses pour chaque question
                 foreach ($questions as $question) {
                     // Vérifier si une réponse existe déjà pour cet étudiant et cette question
-                    $existingResponse = $manager->getRepository(Response::class)
+                    $existingResponse = $manager->getRepository(Responses::class)
                         ->findOneBy([
                             'evaluationId' => $evaluation,
                             'questionId' => $question
                         ]);
 
                     if (!$existingResponse) { // Si aucune réponse n'existe déjà pour cette question et cette évaluation
-                        $response = new Response();
+                        $response = new Responses();
                         $response->setEvaluationId($evaluation);  // Lier l'évaluation avec 'evaluationId'
                         $response->setQuestionId($question);  // Lier la question
 

@@ -126,7 +126,7 @@ class QuestionController extends AbstractController
                     // On suppose que $questionData['correct'] contient la bonne réponse
                     foreach ($answers as $answerText) {
                         $response = new Responses();
-                        $response->setQuestionId($question);
+                        $response->setQuestion($question);
         
                         // Construction de la structure answerValue
                         $answerValue = [];
@@ -175,7 +175,7 @@ class QuestionController extends AbstractController
             $question = $this->entityManager->getRepository(Question::class)->find($questionId);
             if ($question && !empty($answer)) {
                 $response = new Responses();
-                $response->setQuestionId($question);
+                $response->setQuestion($question);
 
                 // Construction de la structure answerValue pour l'énum AnswerValue
                 $answerText = $answer['text'] ?? '';

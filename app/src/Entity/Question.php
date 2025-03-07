@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Enum\TypeChoice;
 use App\Repository\QuestionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
@@ -26,11 +28,16 @@ class Question
     #[ORM\JoinColumn(nullable: true)]
     private ?User $createBy = null;
 
-    #[ORM\OneToOne(mappedBy: 'questionId', cascade: ['persist', 'remove'])]
-    private ?Responses $response = null;
+    #[ORM\OneToMany(mappedBy: 'question', targetEntity: Responses::class, cascade: ['persist', 'remove'])]
+    private Collection $responses;
 
-    #[ORM\Column(length: 255 , nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $correctAnswer = null;
+
+    public function __construct()
+    {
+        $this->responses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -45,7 +52,6 @@ class Question
     public function setQuestionText(string $questionText): static
     {
         $this->questionText = $questionText;
-
         return $this;
     }
 
@@ -57,7 +63,6 @@ class Question
     public function setQuestionType(TypeChoice $questionType): static
     {
         $this->questionType = $questionType;
-
         return $this;
     }
 
@@ -69,29 +74,34 @@ class Question
     public function setCreateBy(?User $createBy): static
     {
         $this->createBy = $createBy;
-
         return $this;
     }
 
-    public function getResponse(): ?Responses
+    /**
+     * @return Collection<int, Responses>
+     */
+    public function getResponses(): Collection
     {
-        return $this->response;
+        return $this->responses;
     }
 
-    public function setResponse(?Responses $response): static
+    public function addResponse(Responses $response): static
     {
-        // unset the owning side of the relation if necessary
-        if ($response === null && $this->response !== null) {
-            $this->response->setQuestionId(null);
+        if (!$this->responses->contains($response)) {
+            $this->responses->add($response);
+            $response->setQuestion($this);
         }
+        return $this;
+    }
 
-        // set the owning side of the relation if necessary
-        if ($response !== null && $response->getQuestionId() !== $this) {
-            $response->setQuestionId($this);
+    public function removeResponse(Responses $response): static
+    {
+        if ($this->responses->removeElement($response)) {
+            // Définir le côté propriétaire à null si nécessaire
+            if ($response->getQuestion() === $this) {
+                $response->setQuestion(null);
+            }
         }
-
-        $this->response = $response;
-
         return $this;
     }
 
@@ -100,10 +110,9 @@ class Question
         return $this->correctAnswer;
     }
 
-    public function setCorrectAnswer(string $correctAnswer): static
+    public function setCorrectAnswer(?string $correctAnswer): static
     {
         $this->correctAnswer = $correctAnswer;
-
         return $this;
     }
 }

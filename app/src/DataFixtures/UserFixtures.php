@@ -106,8 +106,8 @@ class UserFixtures extends Fixture
 
                     if (!$existingResponse) { // Si aucune réponse n'existe déjà pour cette question et cette évaluation
                         $response = new Responses();
-                        $response->setEvaluationId($evaluation);  // Lier l'évaluation avec 'evaluationId'
-                        $response->setQuestionId($question);  // Lier la question
+                        $response->setEvaluation($evaluation);  // Lier l'évaluation avec 'evaluationId'
+                        $response->setQuestion($question);  // Lier la question
 
                         // Utilisation de l'énumération AnswerValue
                         $response->setAnswerValue([$faker->randomElement([AnswerValue::TEXT, AnswerValue::NOTE])]);  // Passer un tableau

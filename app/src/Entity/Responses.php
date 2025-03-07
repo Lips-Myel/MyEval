@@ -8,7 +8,7 @@ use App\Repository\ResponseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ResponsesRepository::class)]
+#[ORM\Entity(repositoryClass: ResponseRepository::class)]
 #[ApiResource]
 #[ORM\Table(name: "responses", uniqueConstraints: [
     new ORM\UniqueConstraint(name: "unique_evaluation_question", columns: ["evaluation_id", "question_id"])
@@ -25,12 +25,11 @@ class Responses
 
     #[ORM\ManyToOne(inversedBy: 'responses')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Evaluation $evaluationId = null;
+    private ?Evaluation $evaluation = null;
 
     #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'responses')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Question $questionId = null;
-
+    private ?Question $question = null;
 
     #[ORM\Column(type: Types::JSON)]
     private array $answerValue = [];
@@ -43,27 +42,25 @@ class Responses
         return $this->id;
     }
 
-    public function getEvaluationId(): ?Evaluation
+    public function getEvaluation(): ?Evaluation
     {
-        return $this->evaluationId;
+        return $this->evaluation;
     }
 
-    public function setEvaluationId(?Evaluation $evaluationId): static
+    public function setEvaluation(?Evaluation $evaluation): static
     {
-        $this->evaluationId = $evaluationId;
-
+        $this->evaluation = $evaluation;
         return $this;
     }
 
-    public function getQuestionId(): ?Question
+    public function getQuestion(): ?Question
     {
-        return $this->questionId;
+        return $this->question;
     }
 
-    public function setQuestionId(?Question $questionId): static
+    public function setQuestion(?Question $question): static
     {
-        $this->questionId = $questionId;
-
+        $this->question = $question;
         return $this;
     }
 
@@ -89,7 +86,6 @@ class Responses
     public function setIsCorrect(bool $isCorrect): static
     {
         $this->isCorrect = $isCorrect;
-
         return $this;
     }
 }

@@ -1,13 +1,3 @@
 controllers:
     resource: '../src/Controller/'
     type: attribute
-
-app_login:
-    path: api/login
-    controller: App\Controller\AuthController::login
-    methods: [POST] [OPTIONS]
-
-app_logout:
-    path: api/logout
-    controller: App\Controller\AuthController::logout
-    methods: [POST] [OPTIONS]

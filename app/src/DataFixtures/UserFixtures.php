@@ -60,7 +60,7 @@ class UserFixtures extends Fixture
             $user->setLastConnection($faker->dateTimeThisMonth());
             $user->setRole($roles[array_rand($roles)]);
             $user->addFormation($formations[array_rand($formations)]);
-            $user->setPassword($this->passwordHasher->hashPassword($user, 'mots2p@sse2025'));
+            $user->setPassword($this->passwordHasher->hashPassword($user, '1234'));
 
             $manager->persist($user);
             $users[] = $user;

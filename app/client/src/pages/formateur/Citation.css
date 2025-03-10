@@ -1,0 +1,26 @@
+strong {
+    color: #D91E41;
+}
+
+.citation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #1E1C59;
+    margin: 120px 0;
+}
+
+.citation h1 {
+    margin: 0;
+}
+
+.citation h2 {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .citation {
+        margin: 32px 0;
+    }
+}

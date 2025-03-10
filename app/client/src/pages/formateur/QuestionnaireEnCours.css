@@ -1,0 +1,15 @@
+.questionnaire-complete {
+    background-color: #FFF;
+    border-radius: 6px;
+    border: 1px solid #212529;
+    width: 380px;
+    height: 300px;
+}
+
+@media (max-width: 768px) {
+
+    .questionnaire-complete {
+        width: 320px;
+        height: 240px;
+    }
+}

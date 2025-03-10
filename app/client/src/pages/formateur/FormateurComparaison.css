@@ -1,0 +1,68 @@
+body {
+    background-color: #FFF1E6;
+    margin: 0 100px;
+}
+
+.download{
+    position: absolute;
+    right: 55px;
+    top: 50px;
+    width: 45px;
+    height: 45px;
+    background-color: #fff;
+    border: 1px solid #212529;
+    border-radius: 6px;
+}
+
+strong{
+    color: #D91E41;
+}
+
+.citation{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #1E1C59;
+    margin: 120px 0;
+}
+
+.citation h1{
+    margin: 0;
+}
+
+.citation h2{
+    margin: 0;
+}
+
+h3 {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 120px 0;
+}
+
+.etudiant {
+    background-color: #fff;
+    border: 1px solid #212529;
+    border-radius: 10px;
+    width: auto;
+    height: 500px;
+    margin: 120px 0;
+}
+
+.formateur {
+    background-color: #fff;
+    border: 1px solid #212529;
+    border-radius: 10px;
+    width: auto;
+    height: 500px;
+    margin: 120px 0;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        text-align: center;
+        margin: 0;
+    }
+}

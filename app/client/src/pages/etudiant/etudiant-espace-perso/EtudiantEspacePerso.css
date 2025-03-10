@@ -5,6 +5,7 @@
 h1 {
 color: var(--secondary-color);
 text-align: center;
+margin-top: 50px;
 }
 h1 > span {
 color: var(--main-color);
@@ -91,6 +92,9 @@ transition: 0.2s;
 }
 
 @media (max-width: 425px) {
+    h1 {
+        margin-top: 25px;
+        }
     h4 {
         margin-top: 60px;
         }

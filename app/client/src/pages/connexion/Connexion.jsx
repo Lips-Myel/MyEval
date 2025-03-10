@@ -42,9 +42,9 @@ function Connexion() {
                 <Link to="/inscription"><IoIosSend />S’inscrire</Link>
             </nav>
             <section className="section_connexion">
-                <div className="container_img">
-                    <img src={logoMyEval} alt="logo du site MyEval" />
-                </div>
+            <h1>
+                <span>M</span>y<span>E</span>val
+            </h1>
                 <h2>S'évaluer, visualiser, progresser.</h2>
 
                 <form className="container_inputs" onSubmit={handleSubmit}>

@@ -25,7 +25,7 @@ class AuthController extends AbstractController
         $this->jwtManager = $jwtManager;
     }
 
-    #[Route('/login', name: 'api_login', methods: ['POST'])]
+    #[Route('api/login', name: 'api_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -75,7 +75,7 @@ class AuthController extends AbstractController
         return $response;
     }
 
-    #[Route('/logout', name: 'api_logout', methods: ['POST'])]
+    #[Route('api/logout', name: 'api_logout', methods: ['POST'])]
     public function logout(): JsonResponse
     {
         $response = $this->json(['success' => true, 'message' => 'Déconnexion réussie']);

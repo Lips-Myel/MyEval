@@ -22,7 +22,7 @@ class QuestionController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route("/api/question/generate", name: "generate_question")]
+    #[Route("api/question/generate", name: "generate_question")]
     public function generateQuestions(): Response
     {
         // Questions en dur avec les bonnes réponses
@@ -153,7 +153,7 @@ class QuestionController extends AbstractController
         return new Response('Questions générées avec succès.');
     }        
 
-    #[Route('/api/evaluation/{evaluationId}/submit', name: 'submit_answers', methods: ['POST'])]
+    #[Route('api/evaluation/{evaluationId}/submit', name: 'submit_answers', methods: ['POST'])]
     public function submitAnswers(int $evaluationId, Request $request): Response
     {
         $evaluation = $this->entityManager->getRepository(Evaluation::class)->find($evaluationId);

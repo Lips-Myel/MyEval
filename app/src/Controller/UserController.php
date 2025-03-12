@@ -18,7 +18,7 @@ class UserController extends AbstractController
     }
 
     // Récupérer tous les utilisateurs
-    #[Route('/users', name: 'app_get_users', methods: ['GET'])]
+    #[Route('api/users', name: 'app_get_users', methods: ['GET'])]
     public function getUsers(): JsonResponse
     {
         $users = $this->entityManager->getRepository(User::class)->findAll();
@@ -37,7 +37,7 @@ class UserController extends AbstractController
     }
 
     // Récupérer un utilisateur par son ID
-    #[Route('/users/{id}', name: 'app_get_user_by_id', methods: ['GET'])]
+    #[Route('api/users/{id}', name: 'app_get_user_by_id', methods: ['GET'])]
     public function getUserById(int $id): JsonResponse
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
@@ -60,7 +60,7 @@ class UserController extends AbstractController
     }
 
     // Supprimer un utilisateur par son ID
-    #[Route('/users/{id}', name: 'app_delete_user', methods: ['DELETE'])]
+    #[Route('api/users/{id}', name: 'app_delete_user', methods: ['DELETE'])]
     public function deleteUser(int $id): JsonResponse
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);

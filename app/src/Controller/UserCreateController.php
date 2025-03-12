@@ -21,7 +21,7 @@ class UserCreateController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/create-users', name: 'app_create_users', methods: ['POST'])]
+    #[Route('api/create-users', name: 'app_create_users', methods: ['POST'])]
     public function __invoke(Request $request, ValidatorInterface $validator): JsonResponse
     {
         // Récupérer et décoder les données JSON

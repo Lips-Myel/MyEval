@@ -6,6 +6,7 @@ import EtudiantEspacePerso from '../pages/etudiant/etudiant-espace-perso/Etudian
 import EtudiantAutoEvaluation from '../pages/etudiant/etudiant-auto-evaluation/EtudiantAutoEvaluation.jsx';
 import EtudiantComparaison from '../pages/etudiant/etudiant-comparaison/EtudiantComparaison.jsx';
 import Layout from '../layouts/layout/Layout.jsx';
+import Admin from '../pages/admin/Admin.jsx'
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
         <Route path="/etudiant-espace-perso" element={<EtudiantEspacePerso />} />
         <Route path="/etudiant-auto-evaluation" element={<EtudiantAutoEvaluation />} />
         <Route path="/etudiant-comparaison" element={<EtudiantComparaison />} />
+        <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
     </BrowserRouter>

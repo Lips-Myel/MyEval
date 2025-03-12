@@ -18,7 +18,7 @@ class StatistiqueController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/statistiques/{studentId}', name: 'generate_statistiques', methods: ['POST'])]
+    #[Route('api/statistiques/{studentId}', name: 'generate_statistiques', methods: ['POST'])]
     public function generateStatistiques(int $studentId, Request $request): Response
     {
         // Récupérer l'utilisateur (étudiant) en fonction de l'ID
@@ -47,7 +47,7 @@ class StatistiqueController extends AbstractController
         return new Response('Statistiques générées avec succès.');
     }
 
-    #[Route('/statistiques/{studentId}/teacher_score', name: 'add_teacher_score', methods: ['POST'])]
+    #[Route('api/statistiques/{studentId}/teacher_score', name: 'add_teacher_score', methods: ['POST'])]
     public function addTeacherScore(int $studentId, Request $request): Response
     {
         // Récupérer l'utilisateur (étudiant) en fonction de l'ID

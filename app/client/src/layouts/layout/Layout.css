@@ -16,14 +16,17 @@ transform: scale(1.06);
 .container_button_header {
 display: flex;
 align-items: center;
+flex-wrap: wrap;
 gap: 25px;
 }
-.container_button_header button {
-padding: 8px 15px;
+.container_button_header a {
+padding: 8px 16px;
 transition: 0.4s;
+border: 1px solid var(--sennaire-color);
+color: var(--sennaire-color);
 }
-.container_button_header button:hover { 
-    transform: scale(1.06);
+.container_button_header a:hover { 
+    transform: scale(1.04);
 }
 /* LOGO */
 @keyframes rotating {
@@ -48,8 +51,8 @@ transition: 0.4s;
         .container_button_header {
         gap: 25px;
         }
-        .container_button_header button {
-        padding: 6px 10px;
+        .container_button_header a {
+        padding: 8px 12px;
         }
 }
 
@@ -63,7 +66,7 @@ transition: 0.4s;
         .container_button_header {
         gap: 10px;
         }
-        .container_button_header button {
+        .container_button_header a {
         padding: 6px 8px;
         }
 }

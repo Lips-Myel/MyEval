@@ -21,7 +21,7 @@ class UserUpdateController extends AbstractController
     }
 
     // Mettre à jour un utilisateur (y compris le mot de passe)
-    #[Route('/users/{id}', name: 'app_update_user', methods: ['PATCH'])]
+    #[Route('api/users/{id}', name: 'app_update_user', methods: ['PATCH'])]
     public function updateUser(int $id, Request $request, ValidatorInterface $validator): JsonResponse
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);

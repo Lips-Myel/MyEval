@@ -20,14 +20,17 @@ class Statistique
     private ?array $trend = null;
 
     #[ORM\ManyToOne(inversedBy: 'statistiques')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $studentId = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $student = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1)]
     private ?string $averageScore = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $standardDeviation = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1)]
+    private ?string $teacherScore = null;
 
     public function getId(): ?int
     {
@@ -46,12 +49,12 @@ class Statistique
         return $this;
     }
 
-    public function getStudentId(): ?User
+    public function getStudent(): ?User
     {
-        return $this->studentId;
+        return $this->student;
     }
 
-    public function setStudentId(?User $studentId): static
+    public function setStudent(?User $studentId): static
     {
         $this->studentId = $studentId;
 
@@ -78,6 +81,18 @@ class Statistique
     public function setStandardDeviation(?float $standardDeviation): static
     {
         $this->standardDeviation = $standardDeviation;
+
+        return $this;
+    }
+
+    public function getTeacherScore(): ?string
+    {
+        return $this->teacherScore;
+    }
+
+    public function setTeacherScore(string $teacherScore): static
+    {
+        $this->teacherScore = $teacherScore;
 
         return $this;
     }

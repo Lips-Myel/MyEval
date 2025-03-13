@@ -3,12 +3,12 @@
 namespace App\DataFixtures;
 
 use App\Entity\Formation;
+use App\Entity\Responses;
 use App\Entity\User;
 use App\Entity\Role;
 use App\Entity\Evaluation;
 use App\Entity\Export;
 use App\Entity\Question;
-use App\Entity\Response;
 use App\Entity\Statistique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -60,7 +60,7 @@ class UserFixtures extends Fixture
             $user->setLastConnection($faker->dateTimeThisMonth());
             $user->setRole($roles[array_rand($roles)]);
             $user->addFormation($formations[array_rand($formations)]);
-            $user->setPassword($this->passwordHasher->hashPassword($user, 'mots2p@sse2025'));
+            $user->setPassword($this->passwordHasher->hashPassword($user, '1234'));
 
             $manager->persist($user);
             $users[] = $user;
@@ -87,8 +87,8 @@ class UserFixtures extends Fixture
             if ($student->getRole()->getName() === 'Etudiant') {
                 // Créer une évaluation pour chaque étudiant
                 $evaluation = new Evaluation();
-                $evaluation->setStudentId($student); // Lier l'évaluation à l'étudiant
-                $evaluation->setTeacherId($users[array_rand($users)]); // Lier l'évaluation à un formateur aléatoire
+                $evaluation->setStudent($student); // Lier l'évaluation à l'étudiant
+                $evaluation->setTeacher($users[array_rand($users)]); // Lier l'évaluation à un formateur aléatoire
                 $evaluation->setDate(new \DateTime());
                 $evaluation->setFinalScore($faker->randomFloat(1, 0, 10));
                 $evaluation->setComment($faker->sentence());
@@ -98,16 +98,16 @@ class UserFixtures extends Fixture
                 // Créer des réponses pour chaque question
                 foreach ($questions as $question) {
                     // Vérifier si une réponse existe déjà pour cet étudiant et cette question
-                    $existingResponse = $manager->getRepository(Response::class)
+                    $existingResponse = $manager->getRepository(Responses::class)
                         ->findOneBy([
                             'evaluationId' => $evaluation,
                             'questionId' => $question
                         ]);
 
                     if (!$existingResponse) { // Si aucune réponse n'existe déjà pour cette question et cette évaluation
-                        $response = new Response();
-                        $response->setEvaluationId($evaluation);  // Lier l'évaluation avec 'evaluationId'
-                        $response->setQuestionId($question);  // Lier la question
+                        $response = new Responses();
+                        $response->setEvaluation($evaluation);  // Lier l'évaluation avec 'evaluationId'
+                        $response->setQuestion($question);  // Lier la question
 
                         // Utilisation de l'énumération AnswerValue
                         $response->setAnswerValue([$faker->randomElement([AnswerValue::TEXT, AnswerValue::NOTE])]);  // Passer un tableau
@@ -123,7 +123,7 @@ class UserFixtures extends Fixture
         foreach ($users as $user) {
             $export = new Export();
             $export->setExportDate($faker->dateTimeThisMonth());
-            $export->setUserId($user); // Relier l'export à l'utilisateur
+            $export->setUser($user); // Relier l'export à l'utilisateur
             $export->setFilePath($faker->filePath());
             $manager->persist($export);
         }
@@ -133,7 +133,7 @@ class UserFixtures extends Fixture
             if ($student->getRole()->getName() === 'Etudiant') {
                 $statistique = new Statistique();
                 $statistique->setTrend([$faker->randomFloat(1, 0, 10), $faker->randomFloat(1, 0, 10)]);
-                $statistique->setStudentId($student); // Relier la statistique à l'étudiant
+                $statistique->setStudent($student); // Relier la statistique à l'étudiant
                 $statistique->setAverageScore($faker->randomFloat(1, 0, 10));
                 $statistique->setStandardDeviation($faker->randomFloat(2, 0, 5));
                 $manager->persist($statistique);

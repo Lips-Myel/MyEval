@@ -5,6 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Enum\TypeChoice;
 use App\Repository\QuestionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
@@ -23,11 +26,25 @@ class Question
     private ?TypeChoice $questionType = null;
 
     #[ORM\ManyToOne(inversedBy: 'questions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $createBy = null;
 
-    #[ORM\OneToOne(mappedBy: 'questionId', cascade: ['persist', 'remove'])]
-    private ?Response $response = null;
+    #[ORM\OneToMany(mappedBy: 'question', targetEntity: Responses::class, cascade: ['persist', 'remove'])]
+    private Collection $responses;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $correctAnswer = null;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private ?array $answers = null;
+
+    #[ORM\ManyToOne(inversedBy: 'questions')]
+    private ?Evaluation $evaluation = null;
+
+    public function __construct()
+    {
+        $this->responses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -42,7 +59,6 @@ class Question
     public function setQuestionText(string $questionText): static
     {
         $this->questionText = $questionText;
-
         return $this;
     }
 
@@ -54,7 +70,6 @@ class Question
     public function setQuestionType(TypeChoice $questionType): static
     {
         $this->questionType = $questionType;
-
         return $this;
     }
 
@@ -66,28 +81,68 @@ class Question
     public function setCreateBy(?User $createBy): static
     {
         $this->createBy = $createBy;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Responses>
+     */
+    public function getResponses(): Collection
+    {
+        return $this->responses;
+    }
+
+    public function addResponse(Responses $response): static
+    {
+        if (!$this->responses->contains($response)) {
+            $this->responses->add($response);
+            $response->setQuestion($this);
+        }
+        return $this;
+    }
+
+    public function removeResponse(Responses $response): static
+    {
+        if ($this->responses->removeElement($response)) {
+            // Définir le côté propriétaire à null si nécessaire
+            if ($response->getQuestion() === $this) {
+                $response->setQuestion(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getCorrectAnswer(): ?string
+    {
+        return $this->correctAnswer;
+    }
+
+    public function setCorrectAnswer(?string $correctAnswer): static
+    {
+        $this->correctAnswer = $correctAnswer;
+        return $this;
+    }
+
+    public function getAnswers(): ?array
+    {
+        return $this->answers;
+    }
+
+    public function setAnswers(?array $answers): static
+    {
+        $this->answers = $answers;
 
         return $this;
     }
 
-    public function getResponse(): ?Response
+    public function getEvaluation(): ?Evaluation
     {
-        return $this->response;
+        return $this->evaluation;
     }
 
-    public function setResponse(?Response $response): static
+    public function setEvaluation(?Evaluation $evaluation): static
     {
-        // unset the owning side of the relation if necessary
-        if ($response === null && $this->response !== null) {
-            $this->response->setQuestionId(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($response !== null && $response->getQuestionId() !== $this) {
-            $response->setQuestionId($this);
-        }
-
-        $this->response = $response;
+        $this->evaluation = $evaluation;
 
         return $this;
     }

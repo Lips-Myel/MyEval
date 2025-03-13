@@ -19,18 +19,17 @@ security:
 
         main:
             lazy: true
-            provider: users_in_db  # Utilisez users_in_db si vous utilisez une base de données
+            provider: users_in_db
             json_login:
                 check_path: api/login
-                username_path: email # Utilise "email" au lieu de "username"
+                username_path: email
                 password_path: password
-                
             logout:
                 path: api/logout
                 target: api/login
-
             stateless: true
-            
+            jwt: ~
+
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 

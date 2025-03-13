@@ -20,8 +20,8 @@ class Export
     private ?\DateTimeInterface $exportDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'exports')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $userId = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user = null;
 
     #[ORM\Column(length: 255)]
     private ?string $filePath = null;
@@ -43,14 +43,14 @@ class Export
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId(?User $userId): static
+    public function setUser(?User $user): static
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }

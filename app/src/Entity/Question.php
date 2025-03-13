@@ -7,6 +7,7 @@ use App\Enum\TypeChoice;
 use App\Repository\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
@@ -33,6 +34,12 @@ class Question
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $correctAnswer = null;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private ?array $answers = null;
+
+    #[ORM\ManyToOne(inversedBy: 'questions')]
+    private ?Evaluation $evaluation = null;
 
     public function __construct()
     {
@@ -113,6 +120,30 @@ class Question
     public function setCorrectAnswer(?string $correctAnswer): static
     {
         $this->correctAnswer = $correctAnswer;
+        return $this;
+    }
+
+    public function getAnswers(): ?array
+    {
+        return $this->answers;
+    }
+
+    public function setAnswers(?array $answers): static
+    {
+        $this->answers = $answers;
+
+        return $this;
+    }
+
+    public function getEvaluation(): ?Evaluation
+    {
+        return $this->evaluation;
+    }
+
+    public function setEvaluation(?Evaluation $evaluation): static
+    {
+        $this->evaluation = $evaluation;
+
         return $this;
     }
 }

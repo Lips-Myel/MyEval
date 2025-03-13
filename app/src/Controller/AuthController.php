@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\JWTManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,15 +11,15 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class AuthController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordEncoder;
-    private JWTTokenManagerInterface $jwtManager;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordEncoder, JWTTokenManagerInterface $jwtManager)
+    private JWTManager $jwtManager;
+
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordEncoder, JWTManager $jwtManager)
     {
         $this->entityManager = $entityManager;
         $this->passwordEncoder = $passwordEncoder;
@@ -43,7 +44,7 @@ class AuthController extends AbstractController
         }
 
         // Création du token JWT
-        $jwt = $this->jwtManager->create($user);
+        $jwt = $this->jwtManager->createJWT($user);
 
         // Configuration du cookie sécurisé avec JWT
         $response = $this->json([
@@ -56,6 +57,7 @@ class AuthController extends AbstractController
                 'last_name' => $user->getLastName(),
                 'role' => $user->getRoles()[0] ?? 'ROLE_USER', // Prend le premier rôle
             ],
+            'token' => $jwt,
         ]);
 
         $response->headers->setCookie(
@@ -65,7 +67,7 @@ class AuthController extends AbstractController
                 time() + 3600,  // Expiration dans 1 heure
                 '/',
                 $_SERVER['HTTP_HOST'], // Définit le domaine actuel
-                true,  // Secure (HTTPS obligatoire)
+                false,  // Secure (HTTPS obligatoire)
                 true,  // HttpOnly (non accessible via JS)
                 false,
                 'None' // Cross-site

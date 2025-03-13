@@ -8,47 +8,62 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EvaluationRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['evaluation:read']],
+    denormalizationContext: ['groups' => ['evaluation:write']]
+)]
 class Evaluation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['evaluation:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
     private ?string $comment = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 2, scale: 1)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
     private ?string $finalScore = null;
 
-    #[ORM\ManyToOne(inversedBy: 'studentEvaluation')]
-    private ?User $teacherId = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'studentEvaluation')]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
+    private ?User $teacher = null;
 
-    #[ORM\ManyToOne(inversedBy: 'autoEvaluation')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $studentId = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'autoEvaluation')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
+    private ?User $student = null;
 
-    /**
-     * @var Collection<int, Responses>
-     */
     #[ORM\OneToMany(targetEntity: Responses::class, mappedBy: 'evaluation', orphanRemoval: true)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
     private Collection $responses;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
     private ?string $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
     private ?string $title = null;
+
+    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'evaluation')]
+    #[Groups(['evaluation:read', 'evaluation:write'])]
+    private Collection $questions;
 
     public function __construct()
     {
         $this->responses = new ArrayCollection();
+        $this->questions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,26 +107,26 @@ class Evaluation
         return $this;
     }
 
-    public function getTeacherId(): ?User
+    public function getTeacher(): ?User
     {
-        return $this->teacherId;
+        return $this->teacher;
     }
 
-    public function setTeacherId(?User $teacherId): static
+    public function setTeacher(?User $teacher): static
     {
-        $this->teacherId = $teacherId;
+        $this->teacher = $teacher;
 
         return $this;
     }
 
-    public function getStudentId(): ?User
+    public function getStudent(): ?User
     {
-        return $this->studentId;
+        return $this->student;
     }
 
-    public function setStudentId(?User $studentId): static
+    public function setStudent(?User $student): static
     {
-        $this->studentId = $studentId;
+        $this->student = $student;
 
         return $this;
     }
@@ -166,6 +181,36 @@ class Evaluation
     public function setTitle(?string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): static
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions->add($question);
+            $question->setEvaluation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): static
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getEvaluation() === $this) {
+                $question->setEvaluation(null);
+            }
+        }
 
         return $this;
     }

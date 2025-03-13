@@ -36,6 +36,31 @@ class UserController extends AbstractController
         return new JsonResponse($data);
     }
 
+    // Récupérer un utilisateur
+    #[Route('api/users/{id}', name: 'app_get_user_by_id', methods: ['GET'])]
+    public function getUserId(int $id): JsonResponse
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Utilisateur non trouvé'], 404);
+        }
+
+        $data = [
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'role' => $user->getRole()->getName(),
+            'formation' => $user->getFormationNames(),
+            'lastConnection'=> $user->getLastConnection()
+        ];
+
+        return new JsonResponse($data);
+    }
+
+    
+
     // Récupérer un utilisateur par son ID
     #[Route('api/users/{id}', name: 'app_get_user_by_id', methods: ['GET'])]
     public function getUserById(int $id): JsonResponse

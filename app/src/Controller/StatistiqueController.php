@@ -35,7 +35,7 @@ class StatistiqueController extends AbstractController
 
         // Créer un objet Statistique
         $statistique = new Statistique();
-        $statistique->setStudentId($student);
+        $statistique->setStudent($student);
         $statistique->setTrend($trend);
         $statistique->setAverageScore($averageScore);
         $statistique->setStandardDeviation($standardDeviation);

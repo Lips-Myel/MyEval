@@ -87,8 +87,8 @@ class UserFixtures extends Fixture
             if ($student->getRole()->getName() === 'Etudiant') {
                 // Créer une évaluation pour chaque étudiant
                 $evaluation = new Evaluation();
-                $evaluation->setStudentId($student); // Lier l'évaluation à l'étudiant
-                $evaluation->setTeacherId($users[array_rand($users)]); // Lier l'évaluation à un formateur aléatoire
+                $evaluation->setStudent($student); // Lier l'évaluation à l'étudiant
+                $evaluation->setTeacher($users[array_rand($users)]); // Lier l'évaluation à un formateur aléatoire
                 $evaluation->setDate(new \DateTime());
                 $evaluation->setFinalScore($faker->randomFloat(1, 0, 10));
                 $evaluation->setComment($faker->sentence());
@@ -123,7 +123,7 @@ class UserFixtures extends Fixture
         foreach ($users as $user) {
             $export = new Export();
             $export->setExportDate($faker->dateTimeThisMonth());
-            $export->setUserId($user); // Relier l'export à l'utilisateur
+            $export->setUser($user); // Relier l'export à l'utilisateur
             $export->setFilePath($faker->filePath());
             $manager->persist($export);
         }
@@ -133,7 +133,7 @@ class UserFixtures extends Fixture
             if ($student->getRole()->getName() === 'Etudiant') {
                 $statistique = new Statistique();
                 $statistique->setTrend([$faker->randomFloat(1, 0, 10), $faker->randomFloat(1, 0, 10)]);
-                $statistique->setStudentId($student); // Relier la statistique à l'étudiant
+                $statistique->setStudent($student); // Relier la statistique à l'étudiant
                 $statistique->setAverageScore($faker->randomFloat(1, 0, 10));
                 $statistique->setStandardDeviation($faker->randomFloat(2, 0, 5));
                 $manager->persist($statistique);

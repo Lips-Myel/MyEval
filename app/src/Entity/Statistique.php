@@ -20,8 +20,8 @@ class Statistique
     private ?array $trend = null;
 
     #[ORM\ManyToOne(inversedBy: 'statistiques')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $studentId = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $student = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 3, scale: 1)]
     private ?string $averageScore = null;
@@ -49,12 +49,12 @@ class Statistique
         return $this;
     }
 
-    public function getStudentId(): ?User
+    public function getStudent(): ?User
     {
-        return $this->studentId;
+        return $this->student;
     }
 
-    public function setStudentId(?User $studentId): static
+    public function setStudent(?User $studentId): static
     {
         $this->studentId = $studentId;
 

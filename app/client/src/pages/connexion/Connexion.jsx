@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { IoIosSend } from "react-icons/io";
 import logoMyEval from "../../assets/myeval-logo.png";
+import { useAuth } from '../../context/AuthContext';
 import "./Connexion.css";
 
 function Connexion() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
     // Initialisation de l'état avec 'usermail' pour l'email
     const [user, setUser] = useState({
@@ -20,30 +22,36 @@ function Connexion() {
     };
 
     // Envoie le formulaire lors de la soumission
-    const handleSubmit = (e) => {
+    const handleSubmit = e => {
         e.preventDefault();
-        fetch("http://localhost/api/login", {
+        fetch('http://localhost/api/login', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(user),
-            credentials: "include", // Utilisez "include" pour envoyer des cookies (équivalent de withCredentials: true)
+            credentials: "include",  // Utilisez "include" pour envoyer des cookies (équivalent de withCredentials: true)
         })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-                localStorage.setItem("token", data.token);
-                navigate("/etudiant-espace-perso");
-            })
-            .catch(console.error);
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          // Vérifie si le token est présent dans la réponse
+          if (data.token) {
+            // Stocke le token via le contexte
+            login(data.token);
+            // Décode le token pour récupérer l'ID utilisateur
+            const decodedToken = JSON.parse(atob(data.token.split('.')[1]));
+            const userId = decodedToken.id;
+            navigate(`/etudiant/${userId}/espace-perso`);
+          } else {
+            console.error('Token non trouvé dans la réponse');
+          }
+        })
+        .catch(console.error);
     };
 
     return (
         <>
             <nav>
-                <Link to="/inscription">
-                    <IoIosSend />
-                    S’inscrire
-                </Link>
+                <Link to="/inscription"><IoIosSend />S’inscrire</Link>
             </nav>
             <section className="section_connexion">
                 <h1>
@@ -74,5 +82,6 @@ function Connexion() {
         </>
     );
 }
+
 
 export default Connexion;

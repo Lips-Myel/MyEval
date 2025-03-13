@@ -6,7 +6,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use App\Repository\UserRepository;
 use App\Controller\UserCreateController;
@@ -18,24 +17,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     operations: [
-        new Post(
-            uriTemplate: '/admin/create-users',
-            controller: UserCreateController::class,
-            name: 'app_create_users',
-            extraProperties: [
-                'openapi' => [
-                    'summary' => 'Créer un utilisateur personnalisé',
-                    'description' => 'Une route POST personnalisée pour créer un utilisateur',
-                ]
-            ]
-        ),
         new GetCollection(
             uriTemplate: '/users',
             name: 'app_get_users',
+            normalizationContext: ['groups' => ['user:read']],
             extraProperties: [
                 'openapi' => [
                     'summary' => 'Récupérer tous les utilisateurs',
@@ -46,6 +36,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Get(
             uriTemplate: '/users/{id}',
             name: 'app_get_user_by_id',
+            normalizationContext: ['groups' => ['user:read']],
             extraProperties: [
                 'openapi' => [
                     'summary' => 'Récupérer un utilisateur par ID',
@@ -56,7 +47,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Patch(
             uriTemplate: '/users/{id}',
             controller: UserUpdateController::class . '::updateUser',
-            name: 'app_update_user',
+            denormalizationContext: ['groups' => ['user:write']],
             extraProperties: [
                 'openapi' => [
                     'summary' => 'Mettre à jour un utilisateur',
@@ -77,61 +68,61 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
- {
+{
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['user:read'])]
     private ?\DateTimeInterface $lastConnection = null;
 
     #[ORM\ManyToOne(targetEntity: Role::class, inversedBy: 'users')]
     #[ORM\JoinColumn(name: "role_id", referencedColumnName: "id", nullable: false)]
-
+    #[Groups(['user:read', 'user:write'])]
     private ?Role $role = null;
 
-    /**
-     * @var Collection<int, Evaluation>
-     */
-    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'teacherId')]
+    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'teacher')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $studentEvaluation;
 
-    /**
-     * @var Collection<int, Evaluation>
-     */
-    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'studentId')]
+    #[ORM\OneToMany(targetEntity: Evaluation::class, mappedBy: 'student')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $autoEvaluation;
 
-    /**
-     * @var Collection<int, Question>
-     */
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'createBy')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $questions;
 
-    /**
-     * @var Collection<int, Statistique>
-     */
-    #[ORM\OneToMany(targetEntity: Statistique::class, mappedBy: 'studentId', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Statistique::class, mappedBy: 'student', orphanRemoval: true)]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $statistiques;
 
-    /**
-     * @var Collection<int, Formation>
-     */
     #[ORM\ManyToMany(targetEntity: Formation::class, mappedBy: 'members')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $formations;
+
+    #[ORM\OneToMany(targetEntity: Responses::class, mappedBy: 'student')]
+    #[Groups(['user:read', 'user:write'])]
+    private Collection $responses;
 
     public function __construct()
     {
@@ -140,6 +131,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         $this->questions = new ArrayCollection();
         $this->statistiques = new ArrayCollection();
         $this->formations = new ArrayCollection();
+        $this->responses = new ArrayCollection();
     }
 
     public function getUserIdentifier(): string
@@ -246,7 +238,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         if (!$this->studentEvaluation->contains($studentEvaluation)) {
             $this->studentEvaluation->add($studentEvaluation);
-            $studentEvaluation->setTeacherId($this);
+            $studentEvaluation->setTeacher($this);
         }
 
         return $this;
@@ -256,8 +248,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         if ($this->studentEvaluation->removeElement($studentEvaluation)) {
             // set the owning side to null (unless already changed)
-            if ($studentEvaluation->getTeacherId() === $this) {
-                $studentEvaluation->setTeacherId(null);
+            if ($studentEvaluation->getTeacher() === $this) {
+                $studentEvaluation->setTeacher(null);
             }
         }
 
@@ -276,7 +268,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         if (!$this->autoEvaluation->contains($autoEvaluation)) {
             $this->autoEvaluation->add($autoEvaluation);
-            $autoEvaluation->setStudentId($this);
+            $autoEvaluation->setStudent($this);
         }
 
         return $this;
@@ -286,8 +278,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         if ($this->autoEvaluation->removeElement($autoEvaluation)) {
             // set the owning side to null (unless already changed)
-            if ($autoEvaluation->getStudentId() === $this) {
-                $autoEvaluation->setStudentId(null);
+            if ($autoEvaluation->getStudent() === $this) {
+                $autoEvaluation->setStudent(null);
             }
         }
 
@@ -336,7 +328,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         if (!$this->statistiques->contains($statistique)) {
             $this->statistiques->add($statistique);
-            $statistique->setStudentId($this);
+            $statistique->setStudent($this);
         }
 
         return $this;
@@ -346,8 +338,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         if ($this->statistiques->removeElement($statistique)) {
             // set the owning side to null (unless already changed)
-            if ($statistique->getStudentId() === $this) {
-                $statistique->setStudentId(null);
+            if ($statistique->getStudent() === $this) {
+                $statistique->setStudent(null);
             }
         }
 
@@ -394,7 +386,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
             'email' => $this->getEmail(),
             'first_name' => $this->getFirstName(),
             'last_name' => $this->getLastName(),
-            'roles' => $this->getRole(),
+            'roles' => $this->getRoles(),
         ];
     }
 
@@ -403,6 +395,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         // Ici, tu peux récupérer les données du payload pour recréer un utilisateur si nécessaire
         return new self();
+    }
+
+    /**
+     * @return Collection<int, Responses>
+     */
+    public function getResponses(): Collection
+    {
+        return $this->responses;
+    }
+
+    public function addResponse(Responses $response): static
+    {
+        if (!$this->responses->contains($response)) {
+            $this->responses->add($response);
+            $response->setStudent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponse(Responses $response): static
+    {
+        if ($this->responses->removeElement($response)) {
+            // set the owning side to null (unless already changed)
+            if ($response->getStudent() === $this) {
+                $response->setStudent(null);
+            }
+        }
+
+        return $this;
     }
 
 }

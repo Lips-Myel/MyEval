@@ -37,6 +37,10 @@ class Responses
     #[ORM\Column]
     private ?bool $isCorrect = null;
 
+    #[ORM\ManyToOne(inversedBy: 'responses' )]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $student = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +90,18 @@ class Responses
     public function setIsCorrect(bool $isCorrect): static
     {
         $this->isCorrect = $isCorrect;
+        return $this;
+    }
+
+    public function getStudent(): ?User
+    {
+        return $this->student;
+    }
+
+    public function setStudent(?User $student): static
+    {
+        $this->student = $student;
+
         return $this;
     }
 }

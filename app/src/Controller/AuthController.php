@@ -67,7 +67,7 @@ class AuthController extends AbstractController
                 time() + 3600,  // Expiration dans 1 heure
                 '/',
                 $_SERVER['HTTP_HOST'], // Définit le domaine actuel
-                false,  // Secure (HTTPS obligatoire)
+                true,  // Secure (HTTPS obligatoire)
                 true,  // HttpOnly (non accessible via JS)
                 false,
                 'None' // Cross-site

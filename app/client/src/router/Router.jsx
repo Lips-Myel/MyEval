@@ -21,7 +21,13 @@ function Router() {
     <AuthProvider> {/* AuthProvider enveloppe toute l'application */}
     <BrowserRouter>
       <Routes>
-        <Route path="/connexion" element={<Connexion />} />
+        <Route path="/" element={<Connexion />} />
+        <Route path="/inscription" element={<Inscription />} />
+        <Route path="/" element={<Layout />} ></Route>
+        <Route path="/etudiant/:etudiantId/espace-perso" element={<EtudiantEspacePerso />} />
+        <Route path="/etudiant/:etudiantId/auto-evaluation/:evaluationId" element={<EtudiantAutoEvaluation />} />
+        <Route path="/etudiant/:etudiantId//comparaison" element={<EtudiantComparaison />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/formateur" element={<Formateur />} />
         <Route path='/formateurcreation' element={<FormateurCreation />} />
         <Route path='/formateurmodification' element={<FormateurModification />} />

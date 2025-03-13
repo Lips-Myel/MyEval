@@ -66,79 +66,79 @@ class UserFixtures extends Fixture
             $users[] = $user;
         }
 
-        // Créer des questions posées par les formateurs
-        $questions = [];
-        foreach ($users as $teacher) {
-            if ($teacher->getRole()->getName() === 'Formateur') {
-                for ($j = 0; $j < 3; $j++) {
-                    $question = new Question();
-                    $question->setQuestionText($faker->sentence());
-                    $question->setCreateBy($teacher); // Le formateur crée la question
-                    $question->setQuestionType($faker->randomElement([TypeChoice::TEXT, TypeChoice::MULTIPLE_CHOICE, TypeChoice::SLIDER]));
+        // // Créer des questions posées par les formateurs
+        // $questions = [];
+        // foreach ($users as $teacher) {
+        //     if ($teacher->getRole()->getName() === 'Formateur') {
+        //         for ($j = 0; $j < 3; $j++) {
+        //             $question = new Question();
+        //             $question->setQuestionText($faker->sentence());
+        //             $question->setCreateBy($teacher); // Le formateur crée la question
+        //             $question->setQuestionType($faker->randomElement([TypeChoice::TEXT, TypeChoice::MULTIPLE_CHOICE, TypeChoice::SLIDER]));
 
-                    $manager->persist($question);
-                    $questions[] = $question;
-                }
-            }
-        }
+        //             $manager->persist($question);
+        //             $questions[] = $question;
+        //         }
+        //     }
+        // }
 
-        // Créer des réponses des étudiants aux questions
-        foreach ($users as $student) {
-            if ($student->getRole()->getName() === 'Etudiant') {
-                // Créer une évaluation pour chaque étudiant
-                $evaluation = new Evaluation();
-                $evaluation->setStudent($student); // Lier l'évaluation à l'étudiant
-                $evaluation->setTeacher($users[array_rand($users)]); // Lier l'évaluation à un formateur aléatoire
-                $evaluation->setDate(new \DateTime());
-                $evaluation->setFinalScore($faker->randomFloat(1, 0, 10));
-                $evaluation->setComment($faker->sentence());
+        // // Créer des réponses des étudiants aux questions
+        // foreach ($users as $student) {
+        //     if ($student->getRole()->getName() === 'Etudiant') {
+        //         // Créer une évaluation pour chaque étudiant
+        //         $evaluation = new Evaluation();
+        //         $evaluation->setStudent($student); // Lier l'évaluation à l'étudiant
+        //         $evaluation->setTeacher($users[array_rand($users)]); // Lier l'évaluation à un formateur aléatoire
+        //         $evaluation->setDate(new \DateTime());
+        //         $evaluation->setFinalScore($faker->randomFloat(1, 0, 10));
+        //         $evaluation->setComment($faker->sentence());
 
-                $manager->persist($evaluation);
+        //         $manager->persist($evaluation);
 
-                // Créer des réponses pour chaque question
-                foreach ($questions as $question) {
-                    // Vérifier si une réponse existe déjà pour cet étudiant et cette question
-                    $existingResponse = $manager->getRepository(Responses::class)
-                        ->findOneBy([
-                            'evaluationId' => $evaluation,
-                            'questionId' => $question
-                        ]);
+        //         // Créer des réponses pour chaque question
+        //         foreach ($questions as $question) {
+        //             // Vérifier si une réponse existe déjà pour cet étudiant et cette question
+        //             $existingResponse = $manager->getRepository(Responses::class)
+        //                 ->findOneBy([
+        //                     'evaluationId' => $evaluation,
+        //                     'questionId' => $question
+        //                 ]);
 
-                    if (!$existingResponse) { // Si aucune réponse n'existe déjà pour cette question et cette évaluation
-                        $response = new Responses();
-                        $response->setEvaluation($evaluation);  // Lier l'évaluation avec 'evaluationId'
-                        $response->setQuestion($question);  // Lier la question
+        //             if (!$existingResponse) { // Si aucune réponse n'existe déjà pour cette question et cette évaluation
+        //                 $response = new Responses();
+        //                 $response->setEvaluation($evaluation);  // Lier l'évaluation avec 'evaluationId'
+        //                 $response->setQuestion($question);  // Lier la question
 
-                        // Utilisation de l'énumération AnswerValue
-                        $response->setAnswerValue([$faker->randomElement([AnswerValue::TEXT, AnswerValue::NOTE])]);  // Passer un tableau
+        //                 // Utilisation de l'énumération AnswerValue
+        //                 $response->setAnswerValue([$faker->randomElement([AnswerValue::TEXT, AnswerValue::NOTE])]);  // Passer un tableau
 
-                        // Sauvegarder la réponse
-                        $manager->persist($response);
-                    }
-                }
-            }
-        }
+        //                 // Sauvegarder la réponse
+        //                 $manager->persist($response);
+        //             }
+        //         }
+        //     }
+        // }
 
-        // Créer des exports
-        foreach ($users as $user) {
-            $export = new Export();
-            $export->setExportDate($faker->dateTimeThisMonth());
-            $export->setUser($user); // Relier l'export à l'utilisateur
-            $export->setFilePath($faker->filePath());
-            $manager->persist($export);
-        }
+        // // Créer des exports
+        // foreach ($users as $user) {
+        //     $export = new Export();
+        //     $export->setExportDate($faker->dateTimeThisMonth());
+        //     $export->setUser($user); // Relier l'export à l'utilisateur
+        //     $export->setFilePath($faker->filePath());
+        //     $manager->persist($export);
+        // }
 
-        // Créer des statistiques
-        foreach ($users as $student) {
-            if ($student->getRole()->getName() === 'Etudiant') {
-                $statistique = new Statistique();
-                $statistique->setTrend([$faker->randomFloat(1, 0, 10), $faker->randomFloat(1, 0, 10)]);
-                $statistique->setStudent($student); // Relier la statistique à l'étudiant
-                $statistique->setAverageScore($faker->randomFloat(1, 0, 10));
-                $statistique->setStandardDeviation($faker->randomFloat(2, 0, 5));
-                $manager->persist($statistique);
-            }
-        }
+        // // Créer des statistiques
+        // foreach ($users as $student) {
+        //     if ($student->getRole()->getName() === 'Etudiant') {
+        //         $statistique = new Statistique();
+        //         $statistique->setTrend([$faker->randomFloat(1, 0, 10), $faker->randomFloat(1, 0, 10)]);
+        //         $statistique->setStudent($student); // Relier la statistique à l'étudiant
+        //         $statistique->setAverageScore($faker->randomFloat(1, 0, 10));
+        //         $statistique->setStandardDeviation($faker->randomFloat(2, 0, 5));
+        //         $manager->persist($statistique);
+        //     }
+        // }
 
         // Sauvegarder toutes les entités après avoir vérifié les doublons
         $manager->flush();

@@ -1,0 +1,36 @@
+.modification {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    font-size: 25px;
+    color: #212529;
+}
+
+.modification label {
+    background-color: #FFF;
+    border-radius: 4px;
+    border: 1px solid #212529;
+    text-align: center;
+    width: 150px;
+    height: 25px;
+    font-size: 20px;
+}
+
+.modification input{
+    width: 25px;
+    height: 25px;
+    border-radius: 6px;
+    border: 1px solid #212529;
+}
+
+@media (max-width: 768px) {
+
+    .modification {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+}

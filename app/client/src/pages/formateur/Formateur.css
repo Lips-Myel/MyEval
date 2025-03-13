@@ -1,0 +1,77 @@
+body {
+    background-color: #FFF1E6;
+    margin: 0 100px;
+}
+
+.responsive{
+    display: none;
+}
+
+.cree {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+button {
+    background-color: #FFF;
+    width: 200px;
+    height: 45px;
+    border-radius: 6px;
+    border: 1px solid #212529;
+}
+
+.questionnaires{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+}
+
+.h4margin{
+    margin: 120px 0 50px 0;
+}
+
+@media (max-width: 768px) {
+
+    body{
+        text-align: center;
+        margin: 0;
+    }
+
+    .responsive{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 0 32px 0;
+    }
+
+    .cree{
+        justify-content: center;
+        margin-bottom: 32px;
+    }
+
+    .cree button{
+        display: none;
+    }
+
+    .cree h4{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .h4margin{
+        margin: 32px 0;
+    }
+
+    .questionnaires{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+    }
+}

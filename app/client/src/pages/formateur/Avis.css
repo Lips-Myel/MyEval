@@ -1,0 +1,15 @@
+.avis {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    font-size: 25px;
+    color: #212529;
+}
+
+.avis input {
+    width: 25px;
+    height: 25px;
+    border-radius: 6px;
+    border: 1px solid #212529;
+}
